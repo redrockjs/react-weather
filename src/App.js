@@ -1,26 +1,26 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import {Navigation} from "./components/Navigation";
+import {Main} from "./pages/Main";
+import {BrowserRouter} from "react-router-dom";
+import {Route, Switch} from "react-router";
+import {FavoriteCities} from "./pages/FavoriteCities";
+import 'materialize-css';
+import {AppState} from "./context/AppState";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    return (
+        <AppState>
+            <BrowserRouter>
+                <Navigation/>
+                <Switch>
+                    <div className="container">
+                        <Route path={'/'} exact component={Main}/>
+                        <Route path={'/favorites'} component={FavoriteCities}/>
+                    </div>
+                </Switch>
+            </BrowserRouter>
+        </AppState>
+    );
 }
 
 export default App;
