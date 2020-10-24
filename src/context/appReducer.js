@@ -1,10 +1,14 @@
-import {GET_POSITION} from "./types";
+import {GET_CURRENT_CITY_WEATHER, GET_POSITION} from "./types";
 
 const handlers = {
     [GET_POSITION]: (state, {payload}) => ({
         ...state,
         currentPosition: payload
     }),
+    [GET_CURRENT_CITY_WEATHER]: (state, {payload}) => ( {
+         ...state,
+        currentCityWeather: payload
+        }),
     DEFAULT: state => state
 }
 

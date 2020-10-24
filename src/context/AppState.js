@@ -1,13 +1,80 @@
 import React, {useReducer} from "react";
 import {AppContext} from "./appContext"
 import {appReducer} from "./appReducer";
-import {GET_POSITION} from "./types";
+import {GET_CURRENT_CITY_WEATHER, GET_POSITION} from "./types";
+import {webAPI as webApi} from "../api/api";
 
 export const AppState = ({children}) => {
     const initialState = {
-        favoriteCities: [{id:null, city:null, lat:null, lng:null}],
+        favoriteCities: [{id: null, city: null, lat: null, lng: null}],
         currentPosition: {lat: 0, lng: 0},
-        currentCityName: "defaultCity"
+        currentCityName: "cityByDefault",
+        currentCityWeather: {
+            "coord": {
+                "lon": null,
+                "lat": null
+            },
+            "weather": [{"id": null, "main": "", "description": "", "icon": ""}],
+            "base": "",
+            "main": {
+                "temp": null,
+                "feels_like": null,
+                "temp_min": null,
+                "temp_max": null,
+                "pressure": null,
+                "humidity": null
+            },
+            "visibility": null,
+            "wind": {"speed": null, "deg": null, "gust": null},
+            "clouds": {"all": null},
+            "dt": null,
+            "sys": {"type": null, "id": null, "country": "", "sunrise": null, "sunset": null},
+            "timezone": null,
+            "id": null,
+            "name": "",
+            "cod": null
+        }
+    //     currentCityWeather:
+    //         {"coord": {
+    //                 "lon": null,            // City geo location, longitude
+    //                 "lat": null },             // City geo location, latitude
+    //             "weather": [
+    //                 {   "id": null,         // Weather condition id
+    //                     "main": "",         // Group of weather parameters (Rain, Snow, Extreme etc.)
+    //                     "description": "",  // Weather condition within the group. You can get the output in your language
+    //                     "icon": ""          // Weather icon id
+    //                 }
+    //             ],
+    //             "base": "station",                 // Internal parameter
+    //             "main": {
+    //                 "temp": null,           // Temperature. Unit Default: Kelvin, Metric: Celsius, Imperial: Fahrenheit.
+    //                 "feels_like": null,     // Temperature. This temperature parameter accounts for the human perception of weather.
+    //                 "temp_min": null,       // Minimum temperature at the moment. This is minimal currently observed temperature (within large megalopolises and urban areas)
+    //                 "temp_max": null,       // Maximum temperature at the moment. This is maximal currently observed temperature (within large megalopolises and urban areas)
+    //                 "pressure": null,       // Atmospheric pressure (on the sea level, if there is no sea_level or grnd_level data), hPa
+    //                 "humidity": null        // Humidity, %
+    //             },
+    //             "visibility": null,
+    //             "wind": {
+    //                 "speed": 0,             // Wind speed. Unit Default: meter/sec, Metric: meter/sec, Imperial: miles/hour.
+    //                 "deg": 0                // Wind direction, degrees (meteorological)
+    //             },
+    //             "clouds": { "all": null             // Cloudiness, %
+    //             },
+    //             "dt": null,                 // Time of data calculation, unix, UTC
+    //             "sys": {
+    //                 "type": null,           // Internal parameter
+    //                 "id": null,             // Internal parameter
+    //                 "message": null,        // Internal parameter
+    //                 "country": "",          // Country code (GB, JP etc.)
+    //                 "sunrise": null,        // Sunrise time, unix, UTC
+    //                 "sunset": null          // Sunset time, unix, UTC
+    //             },
+    //             "timezone": null,           // Shift in seconds from UTC
+    //             "id": null,                 // City ID
+    //             "name": "",                 // City name
+    //             "cod": null                 // Internal parameter
+    //         }
     }
 
     const [state, dispatch] = useReducer(appReducer, initialState)
@@ -17,16 +84,31 @@ export const AppState = ({children}) => {
         navigator.geolocation.getCurrentPosition((position) => {
                 // Текущие координаты.
                 let lat = position.coords.latitude
-                let lng = position.coords.longitude
-                let payload = {lat,lng}
-                dispatch({type: GET_POSITION, payload })
+                let lon = position.coords.longitude
+                let payload = {lat, lon}
+                dispatch({type: GET_POSITION, payload})
             }
         )
     }
 
+    let getWeatherByCityName = async(cityName) => {
+        let response = await webApi.getWeatherByCityName(cityName)
+        //console.log(response)
+        dispatch({type: GET_CURRENT_CITY_WEATHER, response})
+        console.log(state.currentCityWeather);
+    }
+    let getWeatherByCityId = (cityId) => {
+        let response = webApi.getWeatherByCityId(cityId)
+        console.log(response)
+    }
+    let getWeatherByPosition = (lat, lon) => {
+        let response = webApi.getWeatherByPosition(lat, lon)
+        console.log(response)
+    }
+
     return (
         <AppContext.Provider value={{
-            getPosition,
+            getPosition, getWeatherByCityName, getWeatherByCityId, getWeatherByPosition,
             currentPosition: state.currentPosition
         }}>
             {children}

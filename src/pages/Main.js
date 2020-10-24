@@ -2,21 +2,40 @@ import React, {useContext, useEffect} from "react";
 import defcity from "../assets/images/salzburg.jpg"
 import {NavLink} from "react-router-dom";
 import {AppContext} from "../context/appContext";
-
+import {Button} from "react-materialize";
 
 export const Main = () => {
 
-    const {currentPosition,getPosition} = useContext(AppContext)
+    const {currentPosition, getPosition, getWeatherByCityName, getWeatherByCityId, getWeatherByPosition} = useContext(AppContext)
 
     useEffect(() => {
         getPosition()
     }, [])
 
+    let lat = currentPosition.lat;
+    let lon = currentPosition.lon;
+
+    let getWeather = () => {
+        getWeatherByCityName("Sochi");
+        // getWeatherByCityId("491422");
+        // getWeatherByPosition(lat, lon);
+    }
+
     return (
         <div className="container">
             <div className="col s12">
                 <h1>Hello</h1>
-                <p>Your location is { Number(currentPosition.lat).toFixed(2)} {Number(currentPosition.lng).toFixed(2) } </p>
+                <p>Your location
+                    is {Number(lat).toFixed(2)} {Number(lon).toFixed(2)} </p>
+                <Button node="button"
+                        style={{
+                            marginRight: '5px'
+                        }}
+                        waves="light"
+                        onClick={getWeather}>
+                    Запрос
+                </Button>
+
                 <div className="card-panel hoverable">
                     <div className="card-image">
                         <img className="responsive-img" src={defcity} alt=""/>
