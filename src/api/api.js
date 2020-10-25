@@ -1,6 +1,6 @@
 import * as axios from "axios";
 
-const API_KEY = process.env.APP_WEATHER_API_KEY;
+const API_KEY = process.env.REACT_APP_API_KEY;
 
 const ax = axios.create(
     {
