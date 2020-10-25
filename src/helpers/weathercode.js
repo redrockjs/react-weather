@@ -1,0 +1,68 @@
+import React from "react";
+
+export let weatherDescription = (code) => {
+    switch (code) {
+        // 200 - Грозы
+        case 200:   return "гроза с небольшим дождем"
+        case 201:	return "гроза с дождем"
+        case 202:	return "гроза с сильным дождем"
+        case 210:	return "легкая гроза"
+        case 211:	return "гроза"
+        case 212:	return "сильная гроза"
+        case 221:	return "шторм с громом и молнией"
+        case 230:	return "гроза с мелким дождиком"
+        case 231:	return "гроза с моросью"
+        case 232:	return "гроза с сильным дождем"
+        // 300 - Морось
+        case 300:	return "слабая морось"
+        case 301:	return "морось"
+        case 302:	return "сильный дождь"
+        case 310:	return "легкая морось"
+        case 311:	return "моросящий дождь"
+        case 312:	return "сильный моросящий дождь"
+        case 313:	return "ливень, дождь и изморось"
+        case 314:	return "сильный ливень, дождь и морось"
+        case 321:	return "сильный ливень"
+        // 500 - Дождь
+        case 500:	return "легкий дождь"
+        case 501:	return "умеренный дождь"
+        case 502:	return "сильный дождь"
+        case 503:	return "очень сильный дождь"
+        case 504:	return "сверх сильный дождь"
+        case 511:	return "ледяной дождь"
+        case 520:	return "непрерывный дождь низкой интенсивности"
+        case 521:	return "непрерывный дождь"
+        case 522:	return "непрерывный дождь высокой интенсивности"
+        case 531:	return "периодически сильный дождь"
+        // 600 - Снег
+        case 600:	return "слабый снег"
+        case 601:	return "снег"
+        case 602:	return "сильный снег"
+        case 611:	return "мокрый снег"
+        case 612:	return "легкий дождь с мокрым снегом"
+        case 613:	return "дождь с мокрым снегом"
+        case 615:	return "слабый дождь и снег"
+        case 616:	return "дождь и снег"
+        case 620:	return "Непрерывный слабый снег"
+        case 621:	return "Непрерывный снег"
+        case 622:	return "Непрерывный сильный снег"
+        // 700 - Состояние атмосферы
+        case 701:	return "туман"
+        case 711:	return "Дым"
+        case 721:	return "Дымка"
+        case 731:	return "Песок / пыльные вихри"
+        case 741:	return "Туман"
+        case 751:	return "песок"
+        case 761:	return "пыль"
+        case 762:	return "вулканический пепел"
+        case 771:	return "шквалы"
+        case 781:	return "торнадо"
+        // 800 - Чистое небо и облачность
+        case 800:	return "ясное небо "
+        case 801:	return "небольшая облачность: 11-25%"
+        case 802:	return "рассеянная облачность: 25-50%"
+        case 803:	return "переменная облачность: 51-84%"
+        case 804:	return "сплошная облачность: 85-100%"
+        default:    return "Нет данных о погоде"
+    }
+}

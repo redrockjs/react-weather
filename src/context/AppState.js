@@ -8,22 +8,12 @@ export const AppState = ({children}) => {
     const initialState = {
         favoriteCities: [{id: null, city: null, lat: null, lng: null}],
         currentPosition: {lat: 0, lng: 0},
-        currentCityName: "cityByDefault",
+        currentCityName: "Not found",
         currentCityWeather: {
-            "coord": {
-                "lon": null,
-                "lat": null
-            },
+            "coord": { "lon": null, "lat": null},
             "weather": [{"id": null, "main": "", "description": "", "icon": ""}],
             "base": "",
-            "main": {
-                "temp": null,
-                "feels_like": null,
-                "temp_min": null,
-                "temp_max": null,
-                "pressure": null,
-                "humidity": null
-            },
+            "main": { "temp": null, "feels_like": null, "temp_min": null, "temp_max": null, "pressure": null, "humidity": null},
             "visibility": null,
             "wind": {"speed": null, "deg": null, "gust": null},
             "clouds": {"all": null},
@@ -82,7 +72,6 @@ export const AppState = ({children}) => {
 
     let getPosition = () => {
         navigator.geolocation.getCurrentPosition((position) => {
-                // Текущие координаты.
                 let lat = position.coords.latitude
                 let lon = position.coords.longitude
                 let payload = {lat, lon}
@@ -93,24 +82,27 @@ export const AppState = ({children}) => {
 
     let getWeatherByCityName = async(cityName) => {
         let response = await webApi.getWeatherByCityName(cityName)
-        // console.log(response)
-        // console.log(state.currentPosition)
-        dispatch({type: GET_CURRENT_CITY_WEATHER, response})
-        //console.log(state.currentCityWeather)
+        let payload = response
+        dispatch({type: GET_CURRENT_CITY_WEATHER, payload})
     }
-    let getWeatherByCityId = (cityId) => {
-        let response = webApi.getWeatherByCityId(cityId)
-        // console.log(response)
+    let getWeatherByCityId = async(cityId) => {
+        let response = await webApi.getWeatherByCityId(cityId)
+        let payload = response
+        dispatch({type: GET_CURRENT_CITY_WEATHER, payload})
     }
-    let getWeatherByPosition = (lat, lon) => {
-        // let response = webApi.getWeatherByPosition(lat, lon)
-        // console.log(response)
+    let getWeatherByPosition = async(lat, lon) => {
+        let response = await webApi.getWeatherByPosition(lat, lon)
+        let payload = response
+        console.log(payload);
+        dispatch({type: GET_CURRENT_CITY_WEATHER, payload})
     }
 
     return (
         <AppContext.Provider value={{
             getPosition, getWeatherByCityName, getWeatherByCityId, getWeatherByPosition,
-            currentPosition: state.currentPosition
+            currentPosition: state.currentPosition,
+            currentCityName: state.currentCityName,
+            currentCityWeather: state.currentCityWeather
         }}>
             {children}
         </AppContext.Provider>
