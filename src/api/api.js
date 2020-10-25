@@ -1,20 +1,16 @@
 import * as axios from "axios";
 
+const API_KEY = process.env.APP_WEATHER_API_KEY;
+
 const ax = axios.create(
     {
         baseURL: "https://api.openweathermap.org/data/2.5/",
         params: {
-            appid: "126bf8221872dc70cd14aac2789311f6",
+            appid: API_KEY,
             lang: "ru",
             units: "metric"
         },
     });
-
-
-//api 126bf8221872dc70cd14aac2789311f6
-//url api.openweathermap.org/data/2.5/weather?q={city name}&appid={API key}
-
-//constructor https://api.openweathermap.org/data/2.5/weather?appid=126bf8221872dc70cd14aac2789311f6&units=metric&q=sochi&lang=ru
 
 export const webAPI = {
     // Get Users list from REST API with params

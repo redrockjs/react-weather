@@ -93,17 +93,18 @@ export const AppState = ({children}) => {
 
     let getWeatherByCityName = async(cityName) => {
         let response = await webApi.getWeatherByCityName(cityName)
-        //console.log(response)
+        // console.log(response)
+        // console.log(state.currentPosition)
         dispatch({type: GET_CURRENT_CITY_WEATHER, response})
-        console.log(state.currentCityWeather);
+        //console.log(state.currentCityWeather)
     }
     let getWeatherByCityId = (cityId) => {
         let response = webApi.getWeatherByCityId(cityId)
-        console.log(response)
+        // console.log(response)
     }
     let getWeatherByPosition = (lat, lon) => {
-        let response = webApi.getWeatherByPosition(lat, lon)
-        console.log(response)
+        // let response = webApi.getWeatherByPosition(lat, lon)
+        // console.log(response)
     }
 
     return (
