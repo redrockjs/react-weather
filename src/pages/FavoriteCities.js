@@ -1,6 +1,7 @@
 import React, {useContext} from "react";
 import {Col, Collection, CollectionItem, Icon, Row} from "react-materialize";
 import {AppContext} from "../context/appContext";
+import {NavLink} from "react-router-dom";
 
 const FavoriteCities = () => {
     const {favoriteCities, deleteFavorites} = useContext(AppContext)
@@ -14,9 +15,10 @@ const FavoriteCities = () => {
     let weatherList = favoriteCities.map(value => {
         // Тут хитрая штука, присваиваем тэгу А специальный датасет с цифровым id города.
         let dataAttr = {'data-id': value.id}
+        let src = "/city/"+value.id
         return (
             <CollectionItem>
-                {value.city}
+                <NavLink to={src} >{value.city} </NavLink>
                 <a className="secondary-content" href="javascript:void(0)" {...dataAttr}
                    onClick={removeFavorites}>
                     <Icon className="red-text darken-3"> highlight_off </Icon>

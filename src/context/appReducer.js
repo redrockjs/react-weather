@@ -89,6 +89,6 @@ const handlers = {
 
 export const appReducer = (state, action) => {
     const handle = handlers[action.type] || handlers.DEFAULT
-    console.log(action.payload)
+    //console.log(action.payload)
     return handle(state, action)
 }

@@ -3,33 +3,26 @@ import defcity from "../assets/images/salzburg.jpg"
 import {NavLink} from "react-router-dom";
 import {AppContext} from "../context/appContext";
 import {Button, Col, Icon, Row, TextInput} from "react-materialize";
+import {useParams} from "react-router";
 
 const Main = () => {
 
     const {
-        initApp, currentPosition, currentCityName, currentCityWeather, favoriteCities,
-        setInitApp, getPosition, getWeatherByCityName, addFavorites, deleteFavorites, getWeatherByPosition, setCityName
+        currentCityName, currentCityWeather, favoriteCities,
+        getWeatherByCityName, getWeatherByCityId, addFavorites, deleteFavorites, setCityName
     } = useContext(AppContext)
 
-    // useEffect(() => {
-    //     getPosition()
-    // }, [])
-
-    if (initApp===false) {
-        getPosition()
-        setInitApp(true)
-    }
-
-    useEffect(() => {
-        getWeatherByPosition(currentPosition.lat, currentPosition.lat);
-    }, [currentPosition])
-
-    // let lat = currentPosition.lat;
-    // let lon = currentPosition.lon;
-
     let weatherByCityName = () => {
-        getWeatherByCityName(currentCityName);
+        getWeatherByCityName(currentCityName)
     }
+    let {cityId} = useParams()
+
+    useEffect( ()=>{
+        if (typeof (cityId) !== "undefined") {
+            console.log("city params " + cityId)
+            getWeatherByCityId(cityId)
+        }
+    },[])
 
     let setFavorites = () => {
         addFavorites({
@@ -44,6 +37,7 @@ const Main = () => {
         deleteFavorites(currentCityWeather.id);
     }
 
+    console.log("Render");
     return (
         <div className="container">
             <div className="col s12">
@@ -53,10 +47,9 @@ const Main = () => {
                     <div className="card-image">
                         <img className="responsive-img" src={defcity} alt=""/>
                         <TextInput id="TextInput-4" placeholder="Город" onChange={e => setCityName(e.target.value)}/>
-                        <Button node="button" type="submit" waves="light" onClick={weatherByCityName}>
+                        <Button className="blue darken-1" node="button" type="submit" waves="light" onClick={weatherByCityName}>
                             Запрос <Icon right> send </Icon>
                         </Button>
-
                         {/* функция проверки если есть в избранных кнопка убирает из избранных, если нет то кнопка добавляет в избранное*/}
                         {favoriteCities.some(value => value.id === currentCityWeather.id)
                             ? <i onClick={removeFavorites}>

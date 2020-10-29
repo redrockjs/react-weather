@@ -5,6 +5,7 @@ import {Icon, Navbar, NavItem} from "react-materialize"
 export const Navigation = () => {
     return (
         <Navbar
+            className=" blue darken-3"
             alignLinks="right"
             brand={<a className="brand-logo" href="#">isCloudly?!<Icon>cloud</Icon></a>}
             id="mobile-nav"
