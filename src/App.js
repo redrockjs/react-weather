@@ -1,9 +1,9 @@
 import React from 'react';
 import {Navigation} from "./components/Navigation";
-import {Main} from "./pages/Main";
+import Main from "./pages/Main";
 import {BrowserRouter} from "react-router-dom";
 import {Route, Switch} from "react-router";
-import {FavoriteCities} from "./pages/FavoriteCities";
+import FavoriteCities from "./pages/FavoriteCities";
 import 'materialize-css';
 import {AppState} from "./context/AppState";
 

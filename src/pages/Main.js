@@ -4,27 +4,44 @@ import {NavLink} from "react-router-dom";
 import {AppContext} from "../context/appContext";
 import {Button, Col, Icon, Row, TextInput} from "react-materialize";
 
-export const Main = () => {
+const Main = () => {
 
-    const {currentPosition, currentCityName, currentCityWeather, getPosition, getWeatherByCityName, addFavorites, deleteFavorites, getWeatherByPosition, setCityName} = useContext(AppContext)
+    const {
+        initApp, currentPosition, currentCityName, currentCityWeather, favoriteCities,
+        setInitApp, getPosition, getWeatherByCityName, addFavorites, deleteFavorites, getWeatherByPosition, setCityName
+    } = useContext(AppContext)
 
-    useEffect(() => {
+    // useEffect(() => {
+    //     getPosition()
+    // }, [])
+
+    if (initApp===false) {
         getPosition()
-    }, [])
+        setInitApp(true)
+    }
 
     useEffect(() => {
-        getWeatherByPosition(currentPosition.lat, currentPosition.lon);
+        getWeatherByPosition(currentPosition.lat, currentPosition.lat);
     }, [currentPosition])
 
-    let lat = currentPosition.lat;
-    let lon = currentPosition.lon;
+    // let lat = currentPosition.lat;
+    // let lon = currentPosition.lon;
 
     let weatherByCityName = () => {
         getWeatherByCityName(currentCityName);
     }
 
     let setFavorites = () => {
+        addFavorites({
+            id: currentCityWeather.id,
+            city: currentCityWeather.name,
+            lat: currentCityWeather.coord.lat,
+            lon: currentCityWeather.coord.lon
+        });
+    }
 
+    let removeFavorites = () => {
+        deleteFavorites(currentCityWeather.id);
     }
 
     return (
@@ -39,18 +56,26 @@ export const Main = () => {
                         <Button node="button" type="submit" waves="light" onClick={weatherByCityName}>
                             Запрос <Icon right> send </Icon>
                         </Button>
-                        <i onClick={setFavorites}>
-                            <a className="secondary-content" href="javascript:void(0)">
-                                <Icon right className="red-text text-darken-2"> favorite_border </Icon>
-                            </a>
-                        </i>
 
+                        {/* функция проверки если есть в избранных кнопка убирает из избранных, если нет то кнопка добавляет в избранное*/}
+                        {favoriteCities.some(value => value.id === currentCityWeather.id)
+                            ? <i onClick={removeFavorites}>
+                                <a className="secondary-content" href="javascript:void(0)">
+                                    <Icon right className="red-text text-darken-2"> favorite </Icon>
+                                </a>
+                            </i>
+                            : <i onClick={setFavorites}>
+                                <a className="secondary-content" href="javascript:void(0)">
+                                    <Icon right className="red-text text-darken-2"> favorite_border </Icon>
+                                </a>
+                            </i>
+                        }
                     </div>
                     <div className="card-content">
                         <Row>
                             <Col className="" s={6}>
                                 <p></p>
-                                <span className="card-title">Ближайший город: {currentCityWeather.name}</span>
+                                <span className="card-title">Город {currentCityWeather.name}</span>
                                 <p></p>
                                 <p>Температура воздуха {currentCityWeather.main.temp}&deg;, </p>
                                 <p>ощущается как {currentCityWeather.main.feels_like} &deg;</p>
@@ -84,3 +109,5 @@ export const Main = () => {
         </div>
     )
 }
+
+export default Main

@@ -1,4 +1,11 @@
-import {GET_POSITION, GET_CURRENT_CITY_WEATHER, SET_CITY_NAME, ADD_FAVORITES, DELETE_FAVORITES} from "./types";
+import {
+    GET_POSITION,
+    GET_CURRENT_CITY_WEATHER,
+    SET_CITY_NAME,
+    ADD_FAVORITES,
+    DELETE_FAVORITES,
+    INIT_APP
+} from "./types";
 
 const handlers = {
     [GET_POSITION]: (state, {payload}) => ({
@@ -61,6 +68,11 @@ const handlers = {
             currentCityName: name
         }
     ),
+    [INIT_APP]: (state, {payload}) => ( {
+            ...state,
+            initApp: payload
+        }
+    ),
     [ADD_FAVORITES]: (state, {payload}) => ( {
             ...state,
             favoriteCities: [...state.favoriteCities, payload]
@@ -68,7 +80,7 @@ const handlers = {
     ),
     [DELETE_FAVORITES]: (state, {payload}) => ( {
             ...state,
-            favoriteCities: state.favoriteCities.filter(favoriteCities => favoriteCities.id !==payload )
+            favoriteCities: state.favoriteCities.filter(favoriteCities => favoriteCities.id !== Number(payload))
         }
     ),
 
@@ -77,5 +89,6 @@ const handlers = {
 
 export const appReducer = (state, action) => {
     const handle = handlers[action.type] || handlers.DEFAULT
+    console.log(action.payload)
     return handle(state, action)
 }

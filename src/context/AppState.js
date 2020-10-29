@@ -1,13 +1,21 @@
 import React, {useReducer} from "react";
 import {AppContext} from "./appContext"
 import {appReducer} from "./appReducer";
-import {ADD_FAVORITES, DELETE_FAVORITES, GET_CURRENT_CITY_WEATHER, GET_POSITION, SET_CITY_NAME} from "./types";
+import {
+    ADD_FAVORITES,
+    DELETE_FAVORITES,
+    GET_CURRENT_CITY_WEATHER,
+    GET_POSITION,
+    INIT_APP,
+    SET_CITY_NAME
+} from "./types";
 import {webAPI as webApi} from "../api/api";
 
 export const AppState = ({children}) => {
     const initialState = {
-        favoriteCities: [{id: null, city: null, lat: null, lng: null}],
-        currentPosition: {lat: 0, lng: 0},
+        initApp: false,
+        favoriteCities: [], //[{id: null, city: null, lat: null, lon: null}],
+        currentPosition: {lat: 0, lon: 0},
         currentCityName: "Not found",
         currentCityWeather: {
             "coord": {"lon": null, "lat": null},
@@ -115,14 +123,20 @@ export const AppState = ({children}) => {
         dispatch({type: DELETE_FAVORITES, payload});
     }
 
+    let setInitApp = (payload) => {
+        dispatch({type: INIT_APP, payload});
+    }
+
     return (
         <AppContext.Provider value={{
             //state dispatches
-            getPosition, getWeatherByCityName, getWeatherByCityId, getWeatherByPosition, setCityName, addFavorites, deleteFavorites,
+            setInitApp, getPosition, getWeatherByCityName, getWeatherByCityId, getWeatherByPosition, setCityName, addFavorites, deleteFavorites,
             //state props
+            initApp: state.initApp,
             currentPosition: state.currentPosition,
             currentCityName: state.currentCityName,
-            currentCityWeather: state.currentCityWeather
+            currentCityWeather: state.currentCityWeather,
+            favoriteCities: state.favoriteCities
         }}>
             {children}
         </AppContext.Provider>
