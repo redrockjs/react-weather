@@ -4,7 +4,7 @@ import {
     SET_CITY_NAME,
     ADD_FAVORITES,
     DELETE_FAVORITES,
-    INIT_APP
+    INIT_APP, UPDATE_FAVORITES
 } from "./types";
 
 const handlers = {
@@ -63,32 +63,32 @@ const handlers = {
         ...state,
         currentCityWeather: JSON.parse(JSON.stringify(payload)),
     }),
-    [SET_CITY_NAME]: (state, {name}) => ( {
-            ...state,
-            currentCityName: name
-        }
-    ),
-    [INIT_APP]: (state, {payload}) => ( {
-            ...state,
-            initApp: payload
-        }
-    ),
-    [ADD_FAVORITES]: (state, {payload}) => ( {
-            ...state,
-            favoriteCities: [...state.favoriteCities, payload]
-        }
-    ),
-    [DELETE_FAVORITES]: (state, {payload}) => ( {
-            ...state,
-            favoriteCities: state.favoriteCities.filter(favoriteCities => favoriteCities.id !== Number(payload))
-        }
-    ),
-
+    [SET_CITY_NAME]: (state, {name}) => ({
+        ...state,
+        currentCityName: name
+    }),
+    [INIT_APP]: (state, {payload}) => ({
+        ...state,
+        initApp: payload
+    }),
+    [ADD_FAVORITES]: (state, {payload}) => ({
+        ...state,
+        favoriteCities: [...state.favoriteCities, payload]
+    }),
+    [UPDATE_FAVORITES]: (state, {payload}) => ({
+        ...state,
+        favoriteCities: payload
+    }),
+    [DELETE_FAVORITES]: (state, {payload}) => ({
+        ...state,
+        favoriteCities: state.favoriteCities.filter(favoriteCities => favoriteCities.id !== Number(payload))
+    }),
     DEFAULT: state => state
 }
 
 export const appReducer = (state, action) => {
     const handle = handlers[action.type] || handlers.DEFAULT
-    //console.log(action.payload)
+    console.log("action.payload")
+    console.log(action.payload)
     return handle(state, action)
 }

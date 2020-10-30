@@ -35,9 +35,9 @@ const App = () => {
                 <Navigation/>
                 <div className="container">
                     <Switch>
-                        <Route path="/city/:cityId'" render={() => <Main/>}/>
-                        <Route path="/favorites" render={() => <FavoriteCities/>}/>
                         <Route path="/" exact render={() => <Main/>}/>
+                        <Route path="/city/:cityId" render={() => <Main/>}/>
+                        <Route path="/favorites" render={() => <FavoriteCities/>}/>
                         <Route path="*" render={() => <Error404/>}/>
                     </Switch>
                 </div>

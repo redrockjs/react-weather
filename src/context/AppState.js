@@ -7,9 +7,10 @@ import {
     GET_CURRENT_CITY_WEATHER,
     GET_POSITION,
     INIT_APP,
-    SET_CITY_NAME
+    SET_CITY_NAME, UPDATE_FAVORITES
 } from "./types";
-import {webAPI as webApi} from "../api/api";
+import {webAPI as webApi} from "../api/webApi";
+import {storageAPI as storageApi} from "../api/localStorageApi";
 
 export const AppState = ({children}) => {
     const initialState = {
@@ -85,6 +86,14 @@ export const AppState = ({children}) => {
     const [state, dispatch] = useReducer(appReducer, initialState)
     window.state = state
 
+    // InitApp Reducers
+    let setInitApp = (payload) => {
+        dispatch({type: INIT_APP, payload});
+        if (localStorage.length > 0) {
+            let payload = storageApi.getAllStorageItem()
+            dispatch({type: UPDATE_FAVORITES, payload});
+        }
+    }
     let getPosition = () => {
         navigator.geolocation.getCurrentPosition((position) => {
                 let lat = position.coords.latitude
@@ -94,7 +103,11 @@ export const AppState = ({children}) => {
             }
         )
     }
+    let setCityName = (name) => {
+        dispatch({type: SET_CITY_NAME, name});
+    }
 
+    // WebApi Reducers
     let getWeatherByCityName = async (cityName) => {
         let response = await webApi.getWeatherByCityName(cityName)
         let payload = response
@@ -112,20 +125,22 @@ export const AppState = ({children}) => {
         dispatch({type: GET_CURRENT_CITY_WEATHER, payload})
     }
 
-    let setCityName = (name) => {
-        dispatch({type: SET_CITY_NAME, name});
+
+    // DatabaseApi Reducers
+    let addFavorites = (data) => {
+        storageApi.addStorageItem(data)
+        let payload = storageApi.getAllStorageItem()
+        dispatch({type: UPDATE_FAVORITES, payload});
+
+        // let payload = data;
+        // dispatch({type: ADD_FAVORITES, payload});
     }
 
-    let addFavorites = (payload) => {
-        dispatch({type: ADD_FAVORITES, payload});
-    }
-
-    let deleteFavorites = (payload) => {
-        dispatch({type: DELETE_FAVORITES, payload});
-    }
-
-    let setInitApp = (payload) => {
-        dispatch({type: INIT_APP, payload});
+    let deleteFavorites = (data) => {
+        storageApi.deleteStorageItem(data)
+        let payload = storageApi.getAllStorageItem()
+        dispatch({type: UPDATE_FAVORITES, payload});
+        //dispatch({type: DELETE_FAVORITES, payload});
     }
 
     return (
