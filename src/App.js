@@ -4,16 +4,15 @@ import {BrowserRouter} from "react-router-dom";
 import {Route, Switch} from "react-router";
 import 'materialize-css';
 import {AppState} from "./context/AppState";
+import {AppContext} from "./context/appContext";
 import Main from "./pages/Main";
 import FavoriteCities from "./pages/FavoriteCities";
-import {AppContext} from "./context/appContext";
+import {Login} from "./pages/Login";
 import Error404 from "./pages/Error404";
 
 const InitApp = () => {
-    const {
-        initApp, currentPosition, currentCityName, currentCityWeather, favoriteCities,
-        setInitApp, getPosition, getWeatherByPosition
-    } = useContext(AppContext)
+
+    const { initApp, currentPosition, setInitApp, getPosition, getWeatherByPosition } = useContext(AppContext)
 
     if (initApp === false) {
         getPosition()
@@ -37,7 +36,8 @@ const App = () => {
                     <Switch>
                         <Route path="/" exact render={() => <Main/>}/>
                         <Route path="/city/:cityId" render={() => <Main/>}/>
-                        <Route path="/favorites" render={() => <FavoriteCities/>}/>
+                        <Route path="/favorites" exact render={() => <FavoriteCities/>}/>
+                        <Route path="/login" exact render={() => <Login/>}/>
                         <Route path="*" render={() => <Error404/>}/>
                     </Switch>
                 </div>

@@ -1,25 +1,37 @@
 
 export let storageAPI = {
     addStorageItem(payload) {
+
+        let data = JSON.parse(localStorage.getItem('isCloudlyFav'))
+        //console.log("payload",payload)
+        //console.log("data", !!data)
+
+        if (!!data) {
+            data = [ ...data, payload]
+            //console.log("data", !!data)
+        } else {
+            data = [payload]
+            //console.log("data", !!data)
+        }
+
         try {
-            localStorage.setItem(payload.id, JSON.stringify(payload))
+            localStorage.setItem('isCloudlyFav', JSON.stringify(data))
         } catch (e) {
             if (e == "QUOTA_EXCEEDED_ERR") {
-                console.error('Превышен лимит локального хранища браузера');
+                console.error('Превышен лимит локального хранища браузера')
+            } else {
+                console.log(e)
             }
         }
     },
     getAllStorageItem() {
-        let arr=[]
-        for(let key in localStorage) {
-            if (!localStorage.hasOwnProperty(key)) {
-                continue; // пропустит такие ключи, как "setItem", "getItem" и так далее
-            }
-            arr = [...arr, JSON.parse(localStorage.getItem(key))]
-        }
-        return arr
+        let data = JSON.parse(localStorage.getItem('isCloudlyFav'))
+        return data
+
     },
     deleteStorageItem(id) {
-        localStorage.removeItem(id)
+        let data = JSON.parse(localStorage.getItem('isCloudlyFav'))
+        let result = data.filter( value => value.id !== Number(id))
+        localStorage.setItem('isCloudlyFav', JSON.stringify(result))
     }
 }

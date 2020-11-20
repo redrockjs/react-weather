@@ -4,12 +4,12 @@ import {AppContext} from "../context/appContext";
 import {NavLink} from "react-router-dom";
 
 const FavoriteCities = () => {
-    const {favoriteCities, deleteFavorites} = useContext(AppContext)
-
+    const {isAuth, authToken, authUserData, favoriteCities, delFirebase} = useContext(AppContext)
 
     let removeFavorites = (e) => {
         let currentCities=e.currentTarget.dataset.id // берем id из датасета и удаляем по его номеру из стейта
-        deleteFavorites(currentCities)
+        let uid = authUserData.uid
+        delFirebase(uid, authToken, currentCities)
     }
 
     let weatherList = favoriteCities.map(value => {
@@ -33,7 +33,10 @@ const FavoriteCities = () => {
                     <Row>
                         <Col l={12} m={12} s={12}>
                             <Collection header="Favorite Cities">
-                                {weatherList}
+                                {!!isAuth
+                                    ? weatherList
+                                    : <p>You must be signed for view your favorite cities</p>
+                                }
                             </Collection>
                         </Col>
                     </Row>

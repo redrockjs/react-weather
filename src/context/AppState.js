@@ -1,21 +1,24 @@
-import React, {useReducer} from "react";
+import React, {useEffect, useReducer} from "react";
 import {AppContext} from "./appContext"
 import {appReducer} from "./appReducer";
 import {
-    ADD_FAVORITES,
-    DELETE_FAVORITES,
-    GET_CURRENT_CITY_WEATHER,
-    GET_POSITION,
-    INIT_APP,
-    SET_CITY_NAME, UPDATE_FAVORITES
+    ADD_FAVORITES, DELETE_FAVORITES, CLEAR_FAVORITES,
+    GET_POSITION, GET_CURRENT_CITY_WEATHER,
+    INIT_APP, SET_AUTH_USER_DATA,
+    SET_CITY_NAME, SET_IS_AUTH, UPDATE_FAVORITES, SET_AUTH_TOKEN
 } from "./types";
 import {webAPI as webApi} from "../api/webApi";
 import {storageAPI as storageApi} from "../api/localStorageApi";
+import {firebaseApi} from "../api/firebaseApi"
 
 export const AppState = ({children}) => {
+
     const initialState = {
         initApp: false,
-        favoriteCities: [], //[{id: null, city: null, lat: null, lon: null}],
+        isAuth: !!(localStorage.getItem("authData")),
+        authToken: localStorage.getItem("authToken"),
+        authUserData: JSON.parse(localStorage.getItem("authData")),
+        favoriteCities: [], //[{key: string, id: number, city: string, lat: decimal, lon: decimal}],
         currentPosition: {lat: null, lon: null},
         currentCityName: "Not found",
         currentCityWeather: {
@@ -40,59 +43,36 @@ export const AppState = ({children}) => {
             "name": "",
             "cod": null
         }
-        //     currentCityWeather:
-        //         {"coord": {
-        //                 "lon": null,            // City geo location, longitude
-        //                 "lat": null },             // City geo location, latitude
-        //             "weather": [
-        //                 {   "id": null,         // Weather condition id
-        //                     "main": "",         // Group of weather parameters (Rain, Snow, Extreme etc.)
-        //                     "description": "",  // Weather condition within the group. You can get the output in your language
-        //                     "icon": ""          // Weather icon id
-        //                 }
-        //             ],
-        //             "base": "station",                 // Internal parameter
-        //             "main": {
-        //                 "temp": null,           // Temperature. Unit Default: Kelvin, Metric: Celsius, Imperial: Fahrenheit.
-        //                 "feels_like": null,     // Temperature. This temperature parameter accounts for the human perception of weather.
-        //                 "temp_min": null,       // Minimum temperature at the moment. This is minimal currently observed temperature (within large megalopolises and urban areas)
-        //                 "temp_max": null,       // Maximum temperature at the moment. This is maximal currently observed temperature (within large megalopolises and urban areas)
-        //                 "pressure": null,       // Atmospheric pressure (on the sea level, if there is no sea_level or grnd_level data), hPa
-        //                 "humidity": null        // Humidity, %
-        //             },
-        //             "visibility": null,
-        //             "wind": {
-        //                 "speed": 0,             // Wind speed. Unit Default: meter/sec, Metric: meter/sec, Imperial: miles/hour.
-        //                 "deg": 0                // Wind direction, degrees (meteorological)
-        //             },
-        //             "clouds": { "all": null             // Cloudiness, %
-        //             },
-        //             "dt": null,                 // Time of data calculation, unix, UTC
-        //             "sys": {
-        //                 "type": null,           // Internal parameter
-        //                 "id": null,             // Internal parameter
-        //                 "message": null,        // Internal parameter
-        //                 "country": "",          // Country code (GB, JP etc.)
-        //                 "sunrise": null,        // Sunrise time, unix, UTC
-        //                 "sunset": null          // Sunset time, unix, UTC
-        //             },
-        //             "timezone": null,           // Shift in seconds from UTC
-        //             "id": null,                 // City ID
-        //             "name": "",                 // City name
-        //             "cod": null                 // Internal parameter
-        //         }
     }
 
     const [state, dispatch] = useReducer(appReducer, initialState)
     window.state = state
 
-    // InitApp Reducers
+    useEffect(()=>{
+        if (!!state.isAuth) {
+            getFirebase(state.authUserData.uid, state.authToken)
+        }
+    },[state.authUserData])
+
+    // Actions
     let setInitApp = (payload) => {
         dispatch({type: INIT_APP, payload});
         if (localStorage.length > 0) {
             let payload = storageApi.getAllStorageItem()
             dispatch({type: UPDATE_FAVORITES, payload});
         }
+    }
+    const setIsAuth = (payload) => {
+        dispatch({type: SET_IS_AUTH, payload})
+    }
+    const setAuthToken = (payload) => {
+        dispatch({type: SET_AUTH_TOKEN, payload})
+    }
+    const setAuthUserData = (payload) => {
+        dispatch({type: SET_AUTH_USER_DATA, payload})
+    }
+    const clearFavorites = () => {
+        dispatch({type: CLEAR_FAVORITES})
     }
     let getPosition = () => {
         navigator.geolocation.getCurrentPosition((position) => {
@@ -106,8 +86,7 @@ export const AppState = ({children}) => {
     let setCityName = (name) => {
         dispatch({type: SET_CITY_NAME, name});
     }
-
-    // WebApi Reducers
+    // WebApi Actions
     let getWeatherByCityName = async (cityName) => {
         let response = await webApi.getWeatherByCityName(cityName)
         let payload = response
@@ -125,37 +104,65 @@ export const AppState = ({children}) => {
         dispatch({type: GET_CURRENT_CITY_WEATHER, payload})
     }
 
-
-    // DatabaseApi Reducers
-    let addFavorites = (data) => {
-        storageApi.addStorageItem(data)
-        let payload = storageApi.getAllStorageItem()
-        dispatch({type: UPDATE_FAVORITES, payload});
-
-        // let payload = data;
-        // dispatch({type: ADD_FAVORITES, payload});
+    // FirebaseApi Actions
+    let addFirebase = async (uid, authToken, data) => {
+        let response = await firebaseApi.addStorageItem(uid, authToken, data)
+        if (response.status === 200) {
+            let payload = {
+                ...data,
+                key: response.data.name
+            }
+            dispatch({type: ADD_FAVORITES, payload})
+        } else {
+            alert(`Ошибка запроса ${response.statusText}`)
+        }
     }
-
-    let deleteFavorites = (data) => {
-        storageApi.deleteStorageItem(data)
-        let payload = storageApi.getAllStorageItem()
-        dispatch({type: UPDATE_FAVORITES, payload});
-        //dispatch({type: DELETE_FAVORITES, payload});
+    let delFirebase = async (uid, authToken, id) => {
+        let found = state.favoriteCities.filter(v => v.id === Number(id))
+        let response = await firebaseApi.delStorageItem(uid, authToken, found[0].key)
+        if (response.status === 200) {
+            let payload = id
+            dispatch({type: DELETE_FAVORITES, payload})
+        } else {
+            alert(`Ошибка запроса ${response.statusText}`)
+        }
+    }
+    let getFirebase = async (uid, authToken) => {
+        let response = await firebaseApi.getStorageItems(uid, authToken)
+        if (response.status === 200) {
+            if (response.data !== null) {
+                let payload = Object.keys(response.data).map(key => {
+                    return {
+                        ...response.data[key],
+                        key: key
+                    }
+                })
+                dispatch({type: UPDATE_FAVORITES, payload});
+            } else return
+        } else {
+            alert(`Ошибка запроса ${response.statusText}`)
+        }
     }
 
     return (
         <AppContext.Provider value={{
-            //state dispatches
+            //dispatches
+            addFirebase, delFirebase, getFirebase,
             setInitApp,
+            setIsAuth,
+            setAuthToken,
+            setAuthUserData,
             getPosition,
             getWeatherByCityName,
             getWeatherByCityId,
             getWeatherByPosition,
             setCityName,
-            addFavorites,
-            deleteFavorites,
-            //state props
+            clearFavorites,
+            //props
             initApp: state.initApp,
+            isAuth: state.isAuth,
+            authToken: state.authToken,
+            authUserData: state.authUserData,
             currentPosition: state.currentPosition,
             currentCityName: state.currentCityName,
             currentCityWeather: state.currentCityWeather,
